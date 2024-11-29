@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cassert>
+#include <thread>
 
 
 double *read_square_matrix(const char * filename, int n); // чтение из файла
@@ -38,6 +39,8 @@ void print_matrix(double *data, int n, int k, FILE *f = stdout) // печать
 }
 
 
+int n_workers = std::thread::hardware_concurrency();
+
 int main (int argc, const char* argv[] )
 {
     int n, m, k;
@@ -47,27 +50,30 @@ int main (int argc, const char* argv[] )
     double elapsed;
     int p = 0;
 
-    if (argc < 4 || argc > 5)
+    if (argc < 5 || argc > 6)
     {
         printf("\nNot right count arguments, should be 4 or 5\n\n"); // если неверное число аргументов 
         return -1;
     }
 
-    n = atoi(argv[1]); // размер матрицы
-    m = atoi(argv[2]); // количество выводимых данных
-    k = atoi(argv[3]); // номер формулы
+    int n_workers_arg = atoi(argv[1]);
+    if(n_workers_arg > 0)
+        n_workers = n_workers_arg;
+    n = atoi(argv[2]); // размер матрицы
+    m = atoi(argv[3]); // количество выводимых данных
+    k = atoi(argv[4]); // номер формулы
 
     if(k > 0) {
         matrix = make_matrix(n, k);
         matrix_orig = copy_matrix(matrix, n);
     }
-    else if (k == 0 && argc != 5)
+    else if (k == 0 && argc != 6)
     {
         printf("\nNo filname, please give me one\n\n"); // если нет файла
         return -1;
     }
     else {
-        filename = argv[4];
+        filename = argv[5];
         matrix = read_square_matrix(filename, n);
         matrix_orig = copy_matrix(matrix, n);
         if (matrix == NULL)
@@ -89,6 +95,7 @@ int main (int argc, const char* argv[] )
     
     printf("обратная\n");
     print_matrix(X, n, m, stdout); // обратная
+    print_matrix(matrix, n, m, stdout);
 
     printf("{%d, %f},\n", n, elapsed); //  печать время     
     printf("\nnorm = %10.3e\n", drift(matrix_orig, X, n));
