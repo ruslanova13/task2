@@ -60,7 +60,6 @@ void substract_block(double * A, int n, int i1, int i2, double k, int min_j, int
 }
 
 void substruct_below_horizontal(double * A, double *X, int n, int j);
-
 // Возвращает позицию максимального элемента в j+1-й строке
 int substruct_below(double * A, double *X, int n, int j)
 {
@@ -125,7 +124,7 @@ int substruct_below(double * A, double *X, int n, int j)
     double max = fabs(A[(j + 1) * n + argmax]);
     for(int w = 0; w < partial.size() && j < n; w++)
     {
-        if(w == 0 || (partial[w] < n && fabs(A[(j + 1) * n + partial[w]]) > max))
+        if((partial[w] < n && fabs(A[(j + 1) * n + partial[w]]) > max))
         {
             max = fabs(A[partial[w]]);
             argmax = partial[w];
